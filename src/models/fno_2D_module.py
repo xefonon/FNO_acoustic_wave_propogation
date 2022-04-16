@@ -6,6 +6,7 @@ from torchmetrics import MaxMetric
 from torchmetrics.classification.accuracy import Accuracy
 
 from src.models.components.fno_2d import FNO2d
+from src.utilities.fno_utilities import LpLoss
 
 
 class FNO2dModule(LightningModule):
@@ -28,7 +29,8 @@ class FNO2dModule(LightningModule):
         lr: float = 0.001,
         weight_decay: float = 0.0001,
         gamma: float = 0.5,
-        step_size: int = 100
+        step_size: int = 100,
+        size_average: bool = False
     ):
         super().__init__()
 
@@ -39,7 +41,7 @@ class FNO2dModule(LightningModule):
         self.net = net
 
         # loss function
-        self.criterion = torch.nn.CrossEntropyLoss()
+        self.criterion = LpLoss(self.hparams.size_average)
 
         # use separate metric instance for train, val and test step
         # to ensure a proper reduction over the epoch

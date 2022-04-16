@@ -55,8 +55,8 @@ class FNO2d(nn.Module):
                  width: int = 32,
                  padding: int = 9,
                  n_lin_chan: int = 3,
-                 outsize: int = 128
-                ):
+                 outsize: tuple = (128, 2)
+                 ):
         super(FNO2d, self).__init__()
 
         """
@@ -69,7 +69,7 @@ class FNO2d(nn.Module):
         input: the solution of the coefficient function and locations (a(x, y), x, y)
         input shape: (batchsize, x=s, y=s, c=3)
         output: the solution 
-        output shape: (batchsize, x=s, y=s, c=1)
+        output shape: (batchsize, x=s, y=s, c=2)
         """
 
         self.modes1 = modes1
@@ -78,7 +78,7 @@ class FNO2d(nn.Module):
         self.outsize = outsize
         self.padding = padding  # pad the domain if input is non-periodic
         self.n_lin_chan = n_lin_chan
-        self.fc0 = nn.Linear(n_lin_chan, self.width)  # input channel is 3: (a(x, y), x, y)
+        self.fc0 = nn.Linear(self.n_lin_chan, self.width)  # input channel is 3: (a(x, y), x, y)
 
         self.conv0 = SpectralConv2d(self.width, self.width, self.modes1, self.modes2)
         self.conv1 = SpectralConv2d(self.width, self.width, self.modes1, self.modes2)
@@ -89,8 +89,8 @@ class FNO2d(nn.Module):
         self.w2 = nn.Conv2d(self.width, self.width, 1)
         self.w3 = nn.Conv2d(self.width, self.width, 1)
 
-        self.fc1 = nn.Linear(self.width, self.outsize)
-        self.fc2 = nn.Linear(self.outsize, 1)
+        self.fc1 = nn.Linear(self.width, self.outsize[0])
+        self.fc2 = nn.Linear(self.outsize[0], self.outsize[1])
 
     def forward(self, x):
         grid = self.get_grid(x.shape)
