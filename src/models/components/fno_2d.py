@@ -37,7 +37,7 @@ class SpectralConv2d(nn.Module):
         x_ft = torch.fft.rfft2(x)
 
         # Multiply relevant Fourier modes
-        out_ft = torch.zeros(batchsize, self.out_channels,  x.size(-2), x.size(-1)//2 + 1, dtype=torch.cfloat)
+        out_ft = torch.zeros(batchsize, self.out_channels, x.size(-2), x.size(-1)//2 + 1, dtype=torch.cfloat)
         out_ft[:, :, :self.modes1, :self.modes2] = \
             self.compl_mul2d(x_ft[:, :, :self.modes1, :self.modes2], self.weights1)
         out_ft[:, :, -self.modes1:, :self.modes2] = \
@@ -54,7 +54,7 @@ class FNO2d(nn.Module):
                  modes2: int = 12,
                  width: int = 32,
                  padding: int = 9,
-                 n_lin_chan: int = 3,
+                 in_channels: int = 3,
                  outsize: tuple = (128, 2)
                  ):
         super(FNO2d, self).__init__()
@@ -77,8 +77,8 @@ class FNO2d(nn.Module):
         self.width = width
         self.outsize = outsize
         self.padding = padding  # pad the domain if input is non-periodic
-        self.n_lin_chan = n_lin_chan
-        self.fc0 = nn.Linear(self.n_lin_chan, self.width)  # input channel is 3: (a(x, y), x, y)
+        self.in_channels = in_channels
+        self.fc0 = nn.Linear(self.in_channels, self.width)  # input channel is 3: (a(x, y), x, y)
 
         self.conv0 = SpectralConv2d(self.width, self.width, self.modes1, self.modes2)
         self.conv1 = SpectralConv2d(self.width, self.width, self.modes1, self.modes2)
