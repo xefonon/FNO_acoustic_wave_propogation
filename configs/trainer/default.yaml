@@ -1,12 +1,14 @@
 _target_: pytorch_lightning.Trainer
 
-gpus: 0
+strategy: ddp
+gpus: [0,1,2,3]
+# gpus: [3]
 
 min_epochs: 1
-max_epochs: 10
+max_epochs: 100
 
 # number of validation steps to execute at the beginning of the training
-# num_sanity_val_steps: 0
+num_sanity_val_steps: 1
 
 # ckpt path
 resume_from_checkpoint: null

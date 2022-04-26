@@ -2,10 +2,7 @@ from typing import Any, List
 
 import torch
 from pytorch_lightning import LightningModule
-from torchmetrics import MinMetric
 from torchmetrics.classification.accuracy import Accuracy
-
-from src.utilities.fno_utilities import LpLoss
 
 
 class FNO2dModule(LightningModule):
@@ -25,11 +22,11 @@ class FNO2dModule(LightningModule):
     def __init__(
         self,
         net: torch.nn.Module,
+        loss: object,
         lr: float = 0.001,
         weight_decay: float = 0.0001,
         gamma: float = 0.5,
         step_size: int = 100,
-        size_average: bool = False
     ):
         super().__init__()
 
@@ -40,7 +37,7 @@ class FNO2dModule(LightningModule):
         self.net = net
 
         # loss function
-        self.criterion = LpLoss(self.hparams.size_average)
+        self.criterion = loss
 
         # use separate metric instance for train, val and test step
         # to ensure a proper reduction over the epoch
@@ -49,7 +46,6 @@ class FNO2dModule(LightningModule):
         # self.test_acc = Accuracy()
 
         # for logging best so far validation accuracy
-        self.val_loss_best = MinMetric()
 
     def forward(self, x: torch.Tensor):
         return self.net(x)
@@ -86,7 +82,7 @@ class FNO2dModule(LightningModule):
         pass
 
     def test_step(self, batch: Any, batch_idx: int):
-        loss, preds, targets = self.step(batch)
+        loss, y_hat, y = self.step(batch)
 
         # log test metrics
         self.log("test/loss", loss, on_step=False, on_epoch=True)

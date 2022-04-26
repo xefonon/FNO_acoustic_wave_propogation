@@ -1,10 +1,18 @@
-_target_: src.datamodules.fno_2d_datamodule.FNO2dDatamodule
+_target_: src.datamodules.fno_2d_datamodule.FNO2dDataModule
 
 dataset:
   _target_: src.datamodules.fno_2d_datamodule.FNO2dDataset
-  data_dir: ${data_dir} # data_dir is specified in config.yaml
+  data_path: "/disk/student/dvoytan/FNO_acoustic_wave_propogation/data/layered_models_copy/*"
+  n_models: 4000
+  x_shape: [0, 128.01, 0.01]
+  y_shape: [0, 128.01, 0.01]
+  reshape_shape: [128, 128]
+  stage: "train"
+  y_rescale: 10000.0
+  train_freqs: [0.5, 10.1, 0.5]  # Start stop step for arange
+  test_freqs: [0.25, 10.25, 0.5]
   
 batch_size: 32
-train_val_test_split: [55_000, 5_000, 10_000]
+train_val_test_split: [3500, 250, 250]
 num_workers: 0
 pin_memory: False

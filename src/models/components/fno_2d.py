@@ -1,11 +1,14 @@
+from atexit import register
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.parameter import Parameter
+from pytorch_lightning import LightningModule
+from functools import partial
 
 
-class SpectralConv2d(nn.Module):
+class SpectralConv2d(LightningModule):
     def __init__(self,
                  in_channels: int,
                  out_channels: int,
@@ -23,28 +26,42 @@ class SpectralConv2d(nn.Module):
         self.modes2 = modes2
 
         self.scale = (1 / (in_channels * out_channels))
-        self.weights1 = nn.Parameter(self.scale * torch.rand(in_channels, out_channels, self.modes1, self.modes2, dtype=torch.cfloat))
-        self.weights2 = nn.Parameter(self.scale * torch.rand(in_channels, out_channels, self.modes1, self.modes2, dtype=torch.cfloat))
+        # self.weights1 = nn.Parameter(self.scale * torch.rand(in_channels, out_channels, self.modes1, self.modes2, dtype=torch.cfloat, device=self.device))
+        # self.weights2 = nn.Parameter(self.scale * torch.rand(in_channels, out_channels, self.modes1, self.modes2, dtype=torch.cfloat, device=self.device))
+        self.register_parameter("weights1", nn.Parameter(self.scale * torch.rand(self.in_channels, self.out_channels, self.modes1, self.modes2, 2)))
+        self.register_parameter("weights2", nn.Parameter(self.scale * torch.rand(self.in_channels, self.out_channels, self.modes1, self.modes2, 2)))
 
-    # Complex multiplication
-    def compl_mul2d(self, input, weights):
+    def compl_mul2d(self, a, b):
+        '''
+        Using the original verison of complex mul because distributed data parallel
+        with nccl backend does not support complex dtypes
+        '''
         # (batch, in_channel, x,y ), (in_channel, out_channel, x,y) -> (batch, out_channel, x,y)
-        return torch.einsum("bixy,ioxy->boxy", input, weights)
+        op = partial(torch.einsum, "bixy,ioxy->boxy")
+        return torch.stack([
+            op(a[..., 0], b[..., 0]) - op(a[..., 1], b[..., 1]),
+            op(a[..., 1], b[..., 0]) + op(a[..., 0], b[..., 1])
+        ], dim=-1)
 
     def forward(self, x):
+        '''
+        Modified for torch 1.8.x with distributed data parallelism 
+        '''
         batchsize = x.shape[0]
+
         # Compute Fourier coeffcients up to factor of e^(- something constant)
-        x_ft = torch.fft.rfft2(x)
+        x_ft = torch.view_as_real(torch.fft.rfft2(x))
 
         # Multiply relevant Fourier modes
-        out_ft = torch.zeros(batchsize, self.out_channels, x.size(-2), x.size(-1)//2 + 1, dtype=torch.cfloat)
+        out_ft = torch.zeros(batchsize, self.out_channels, x.size(-2), x.size(-1)//2 + 1, 2).type_as(x_ft)
+
         out_ft[:, :, :self.modes1, :self.modes2] = \
             self.compl_mul2d(x_ft[:, :, :self.modes1, :self.modes2], self.weights1)
         out_ft[:, :, -self.modes1:, :self.modes2] = \
             self.compl_mul2d(x_ft[:, :, -self.modes1:, :self.modes2], self.weights2)
 
         # Return to physical space
-        x = torch.fft.irfft2(out_ft, s=(x.size(-2), x.size(-1)))
+        x = torch.fft.irfft2(torch.view_as_complex(out_ft), s=(x.size(-2), x.size(-1)))
         return x
 
 
@@ -93,8 +110,8 @@ class FNO2d(nn.Module):
         self.fc2 = nn.Linear(self.outsize[0], self.outsize[1])
 
     def forward(self, x):
-        grid = self.get_grid(x.shape)
-        x = torch.cat((x, grid), dim=-1)
+        # grid = self.get_grid(x.shape)
+        # x = torch.cat((x, grid), dim=-1)
         x = self.fc0(x)
         x = x.permute(0, 3, 1, 2)
         x = F.pad(x, [0, self.padding, 0, self.padding])

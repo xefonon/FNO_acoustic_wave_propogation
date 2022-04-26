@@ -1,0 +1,18 @@
+_target_: src.models.fno_2D_module.FNO2dModule
+lr: 0.001
+weight_decay: 0.0001
+
+loss:
+  _target_: src.utils.fno_utilities.LpLoss
+  size_average: false
+
+net:
+  _target_: src.models.components.fno_2d.FNO2d
+  modes1: 12
+  modes2: 12
+  width: 32
+  padding: 9
+  in_channels: 3
+  outsize: [128, 2]
+
+
