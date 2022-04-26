@@ -2,7 +2,6 @@ from typing import Any, List
 
 import torch
 from pytorch_lightning import LightningModule
-from torchmetrics.classification.accuracy import Accuracy
 import matplotlib.pyplot as plt
 
 
