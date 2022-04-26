@@ -110,8 +110,9 @@ class FNO2dDataset(Dataset):
         grid = self.get_grid()
         x = torch.cat((x.unsqueeze(-1), grid), dim=-1)
         y_real, y_imag = self.load_y(idx)
-        y_real, y_imag = self.to_tensor(y_real), self.to_tensor(y_imag)
+        y_real, y_imag = self.to_tensor(y_real).unsqueeze(-1), self.to_tensor(y_imag).unsqueeze(-1)
         y = torch.cat((y_real, y_imag), axis=-1)
+
         return (x, y)
 
 

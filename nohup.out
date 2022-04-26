@@ -1,0 +1,203 @@
+[[36m2022-04-26 11:31:24,751[0m][[34msrc.utils[0m][[32mINFO[0m] - Disabling python warnings! <config.ignore_warnings=True>[0m
+[[36m2022-04-26 11:31:24,751[0m][[34msrc.utils[0m][[32mINFO[0m] - Printing config tree with Rich! <config.print_config=True>[0m
+CONFIG
+├── datamodule
+│   └── _target_: src.datamodules.fno_2d_datamodule.FNO2dDataModule             
+│       dataset:                                                                
+│         _target_: src.datamodules.fno_2d_datamodule.FNO2dDataset              
+│         data_path: /disk/student/dvoytan/FNO_acoustic_wave_propogation/data/la
+│         n_models: 4000                                                        
+│         x_shape:                                                              
+│         - 0                                                                   
+│         - 128.01                                                              
+│         - 0.01                                                                
+│         y_shape:                                                              
+│         - 0                                                                   
+│         - 128.01                                                              
+│         - 0.01                                                                
+│         reshape_shape:                                                        
+│         - 128                                                                 
+│         - 128                                                                 
+│         stage: train                                                          
+│         y_rescale: 10000.0                                                    
+│         train_freqs:                                                          
+│         - 0.5                                                                 
+│         - 10.1                                                                
+│         - 0.5                                                                 
+│         test_freqs:                                                           
+│         - 0.25                                                                
+│         - 10.25                                                               
+│         - 0.5                                                                 
+│       batch_size: 32                                                          
+│       train_val_test_split:                                                   
+│       - 3500                                                                  
+│       - 250                                                                   
+│       - 250                                                                   
+│       num_workers: 0                                                          
+│       pin_memory: false                                                       
+│                                                                               
+├── model
+│   └── _target_: src.models.fno_2D_module.FNO2dModule                          
+│       lr: 0.001                                                               
+│       weight_decay: 0.0001                                                    
+│       loss:                                                                   
+│         _target_: src.utils.fno_utilities.LpLoss                              
+│         size_average: false                                                   
+│       net:                                                                    
+│         _target_: src.models.components.fno_2d.FNO2d                          
+│         modes1: 12                                                            
+│         modes2: 12                                                            
+│         width: 32                                                             
+│         padding: 9                                                            
+│         in_channels: 3                                                        
+│         outsize:                                                              
+│         - 128                                                                 
+│         - 2                                                                   
+│                                                                               
+├── callbacks
+│   └── model_checkpoint:                                                       
+│         _target_: pytorch_lightning.callbacks.ModelCheckpoint                 
+│         monitor: val/loss                                                     
+│         mode: min                                                             
+│         save_top_k: 1                                                         
+│         save_last: true                                                       
+│         verbose: false                                                        
+│         dirpath: checkpoints/                                                 
+│         filename: epoch_{epoch:03d}                                           
+│         auto_insert_metric_name: false                                        
+│       early_stopping:                                                         
+│         _target_: pytorch_lightning.callbacks.EarlyStopping                   
+│         monitor: val/loss                                                     
+│         mode: max                                                             
+│         patience: 20                                                          
+│         min_delta: 0                                                          
+│       model_summary:                                                          
+│         _target_: pytorch_lightning.callbacks.RichModelSummary                
+│         max_depth: -1                                                         
+│       rich_progress_bar:                                                      
+│         _target_: pytorch_lightning.callbacks.RichProgressBar                 
+│                                                                               
+├── logger
+│   └── tensorboard:                                                            
+│         _target_: pytorch_lightning.loggers.tensorboard.TensorBoardLogger     
+│         save_dir: tensorboard/                                                
+│         name: null                                                            
+│         version: default                                                      
+│         log_graph: false                                                      
+│         default_hp_metric: true                                               
+│         prefix: ''                                                            
+│                                                                               
+├── trainer
+│   └── _target_: pytorch_lightning.Trainer                                     
+│       strategy: ddp                                                           
+│       gpus:                                                                   
+│       - 0                                                                     
+│       - 1                                                                     
+│       - 2                                                                     
+│       - 3                                                                     
+│       min_epochs: 1                                                           
+│       max_epochs: 100                                                         
+│       num_sanity_val_steps: 1                                                 
+│       resume_from_checkpoint: null                                            
+│                                                                               
+├── original_work_dir
+│   └── /disk/student/dvoytan/FNO_acoustic_wave_propogation                     
+├── data_dir
+│   └── /disk/student/dvoytan/FNO_acoustic_wave_propogation/data/               
+├── print_config
+│   └── True                                                                    
+├── ignore_warnings
+│   └── True                                                                    
+├── train
+│   └── True                                                                    
+├── test
+│   └── True                                                                    
+├── seed
+│   └── None                                                                    
+└── name
+    └── default                                                                 
+[[36m2022-04-26 11:31:24,910[0m][[34msrc.training_pipeline[0m][[32mINFO[0m] - Instantiating datamodule <src.datamodules.fno_2d_datamodule.FNO2dDataModule>[0m
+[[36m2022-04-26 11:31:25,235[0m][[34msrc.training_pipeline[0m][[32mINFO[0m] - Instantiating model <src.models.fno_2D_module.FNO2dModule>[0m
+[[36m2022-04-26 11:31:26,169[0m][[34mtorch.distributed.nn.jit.instantiator[0m][[32mINFO[0m] - Created a temporary directory at /tmp/tmpy1qrk2s1[0m
+[[36m2022-04-26 11:31:26,170[0m][[34mtorch.distributed.nn.jit.instantiator[0m][[32mINFO[0m] - Writing /tmp/tmpy1qrk2s1/_remote_module_non_sriptable.py[0m
+[[36m2022-04-26 11:31:26,217[0m][[34msrc.training_pipeline[0m][[32mINFO[0m] - Instantiating callback <pytorch_lightning.callbacks.ModelCheckpoint>[0m
+[[36m2022-04-26 11:31:26,219[0m][[34msrc.training_pipeline[0m][[32mINFO[0m] - Instantiating callback <pytorch_lightning.callbacks.EarlyStopping>[0m
+[[36m2022-04-26 11:31:26,220[0m][[34msrc.training_pipeline[0m][[32mINFO[0m] - Instantiating callback <pytorch_lightning.callbacks.RichModelSummary>[0m
+[[36m2022-04-26 11:31:26,220[0m][[34msrc.training_pipeline[0m][[32mINFO[0m] - Instantiating callback <pytorch_lightning.callbacks.RichProgressBar>[0m
+[[36m2022-04-26 11:31:26,221[0m][[34msrc.training_pipeline[0m][[32mINFO[0m] - Instantiating logger <pytorch_lightning.loggers.tensorboard.TensorBoardLogger>[0m
+[[36m2022-04-26 11:31:26,222[0m][[34msrc.training_pipeline[0m][[32mINFO[0m] - Instantiating trainer <pytorch_lightning.Trainer>[0m
+[[36m2022-04-26 11:31:26,244[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Trainer already configured with model summary callbacks: [<class 'pytorch_lightning.callbacks.rich_model_summary.RichModelSummary'>]. Skipping setting a default `ModelSummary` callback.[0m
+[[36m2022-04-26 11:31:26,245[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - GPU available: True, used: True[0m
+[[36m2022-04-26 11:31:26,245[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - TPU available: False, using: 0 TPU cores[0m
+[[36m2022-04-26 11:31:26,245[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - IPU available: False, using: 0 IPUs[0m
+[[36m2022-04-26 11:31:26,245[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - HPU available: False, using: 0 HPUs[0m
+[[36m2022-04-26 11:31:26,245[0m][[34msrc.training_pipeline[0m][[32mINFO[0m] - Logging hyperparameters![0m
+[[36m2022-04-26 11:31:26,255[0m][[34msrc.training_pipeline[0m][[32mINFO[0m] - Starting training![0m
+[[36m2022-04-26 11:31:29,660[0m][[34mtorch.distributed.nn.jit.instantiator[0m][[32mINFO[0m] - Created a temporary directory at /tmp/tmpkbthkkxl[0m
+[[36m2022-04-26 11:31:29,661[0m][[34mtorch.distributed.nn.jit.instantiator[0m][[32mINFO[0m] - Writing /tmp/tmpkbthkkxl/_remote_module_non_sriptable.py[0m
+[[36m2022-04-26 11:31:29,826[0m][[34mpytorch_lightning.utilities.distributed[0m][[32mINFO[0m] - Initializing distributed: GLOBAL_RANK: 1, MEMBER: 2/4[0m
+[[36m2022-04-26 11:31:33,320[0m][[34mtorch.distributed.nn.jit.instantiator[0m][[32mINFO[0m] - Created a temporary directory at /tmp/tmpejwykccj[0m
+[[36m2022-04-26 11:31:33,321[0m][[34mtorch.distributed.nn.jit.instantiator[0m][[32mINFO[0m] - Writing /tmp/tmpejwykccj/_remote_module_non_sriptable.py[0m
+[[36m2022-04-26 11:31:33,463[0m][[34mpytorch_lightning.utilities.distributed[0m][[32mINFO[0m] - Initializing distributed: GLOBAL_RANK: 2, MEMBER: 3/4[0m
+[[36m2022-04-26 11:31:36,044[0m][[34mtorch.distributed.nn.jit.instantiator[0m][[32mINFO[0m] - Created a temporary directory at /tmp/tmpg7bzga2q[0m
+[[36m2022-04-26 11:31:36,044[0m][[34mtorch.distributed.nn.jit.instantiator[0m][[32mINFO[0m] - Writing /tmp/tmpg7bzga2q/_remote_module_non_sriptable.py[0m
+[[36m2022-04-26 11:31:36,140[0m][[34mpytorch_lightning.utilities.distributed[0m][[32mINFO[0m] - Initializing distributed: GLOBAL_RANK: 3, MEMBER: 4/4[0m
+[[36m2022-04-26 11:31:37,904[0m][[34mpytorch_lightning.utilities.distributed[0m][[32mINFO[0m] - Initializing distributed: GLOBAL_RANK: 0, MEMBER: 1/4[0m
+[[36m2022-04-26 11:31:38,142[0m][[34mtorch.distributed.distributed_c10d[0m][[32mINFO[0m] - Added key: store_based_barrier_key:1 to store for rank: 3[0m
+[[36m2022-04-26 11:31:38,466[0m][[34mtorch.distributed.distributed_c10d[0m][[32mINFO[0m] - Added key: store_based_barrier_key:1 to store for rank: 2[0m
+[[36m2022-04-26 11:31:38,830[0m][[34mtorch.distributed.distributed_c10d[0m][[32mINFO[0m] - Added key: store_based_barrier_key:1 to store for rank: 1[0m
+[[36m2022-04-26 11:31:38,840[0m][[34mtorch.distributed.distributed_c10d[0m][[32mINFO[0m] - Added key: store_based_barrier_key:1 to store for rank: 0[0m
+[[36m2022-04-26 11:31:38,841[0m][[34mtorch.distributed.distributed_c10d[0m][[32mINFO[0m] - Rank 0: Completed store-based barrier for key:store_based_barrier_key:1 with 4 nodes.[0m
+[[36m2022-04-26 11:31:38,841[0m][[34mtorch.distributed.distributed_c10d[0m][[32mINFO[0m] - Rank 1: Completed store-based barrier for key:store_based_barrier_key:1 with 4 nodes.[0m
+[[36m2022-04-26 11:31:38,841[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - ----------------------------------------------------------------------------------------------------
+distributed_backend=nccl
+All distributed processes registered. Starting with 4 processes
+----------------------------------------------------------------------------------------------------
+[0m
+[[36m2022-04-26 11:31:38,846[0m][[34mtorch.distributed.distributed_c10d[0m][[32mINFO[0m] - Rank 2: Completed store-based barrier for key:store_based_barrier_key:1 with 4 nodes.[0m
+[[36m2022-04-26 11:31:38,850[0m][[34mtorch.distributed.distributed_c10d[0m][[32mINFO[0m] - Rank 3: Completed store-based barrier for key:store_based_barrier_key:1 with 4 nodes.[0m
+[[36m2022-04-26 11:31:43,800[0m][[34mpytorch_lightning.accelerators.gpu[0m][[32mINFO[0m] - LOCAL_RANK: 1 - CUDA_VISIBLE_DEVICES: [0,1,2,3][0m
+[[36m2022-04-26 11:31:43,800[0m][[34mpytorch_lightning.accelerators.gpu[0m][[32mINFO[0m] - LOCAL_RANK: 2 - CUDA_VISIBLE_DEVICES: [0,1,2,3][0m
+[[36m2022-04-26 11:31:43,800[0m][[34mpytorch_lightning.accelerators.gpu[0m][[32mINFO[0m] - LOCAL_RANK: 3 - CUDA_VISIBLE_DEVICES: [0,1,2,3][0m
+[[36m2022-04-26 11:31:43,800[0m][[34mpytorch_lightning.accelerators.gpu[0m][[32mINFO[0m] - LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3][0m
+┏━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃    ┃ Name      ┃ Type           ┃ Params ┃
+┡━━━━╇━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ 0  │ net       │ FNO2d          │  2.4 M │
+│ 1  │ net.fc0   │ Linear         │    128 │
+│ 2  │ net.conv0 │ SpectralConv2d │  589 K │
+│ 3  │ net.conv1 │ SpectralConv2d │  589 K │
+│ 4  │ net.conv2 │ SpectralConv2d │  589 K │
+│ 5  │ net.conv3 │ SpectralConv2d │  589 K │
+│ 6  │ net.w0    │ Conv2d         │  1.1 K │
+│ 7  │ net.w1    │ Conv2d         │  1.1 K │
+│ 8  │ net.w2    │ Conv2d         │  1.1 K │
+│ 9  │ net.w3    │ Conv2d         │  1.1 K │
+│ 10 │ net.fc1   │ Linear         │  4.2 K │
+│ 11 │ net.fc2   │ Linear         │    258 │
+└────┴───────────┴────────────────┴────────┘
+Trainable params: 2.4 M                                                         
+Non-trainable params: 0                                                         
+Total params: 2.4 M                                                             
+Total estimated model params size (MB): 9                                       
+[W reducer.cpp:1289] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())
+[W reducer.cpp:1289] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())
+[W reducer.cpp:1289] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())
+[W reducer.cpp:1289] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())
+Epoch 20  ━━━━━━━━━━━━━━━━━ 587/587 0:07:05 • 0:00:00 2.23it/s loss: 3.9 v_num: 
+                                                               ault             
+[[36m2022-04-26 13:54:54,105[0m][[34msrc.training_pipeline[0m][[32mINFO[0m] - Starting testing![0m
+[[36m2022-04-26 13:54:54,128[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Restoring states from the checkpoint path at /disk/student/dvoytan/FNO_acoustic_wave_propogation/logs/experiments/runs/default/2022-04-26_11-31-23/checkpoints/epoch_020.ckpt[0m
+[[36m2022-04-26 13:54:54,162[0m][[34mpytorch_lightning.accelerators.gpu[0m][[32mINFO[0m] - LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3][0m
+[[36m2022-04-26 13:54:54,163[0m][[34mpytorch_lightning.accelerators.gpu[0m][[32mINFO[0m] - LOCAL_RANK: 2 - CUDA_VISIBLE_DEVICES: [0,1,2,3][0m
+[[36m2022-04-26 13:54:54,166[0m][[34mpytorch_lightning.accelerators.gpu[0m][[32mINFO[0m] - LOCAL_RANK: 3 - CUDA_VISIBLE_DEVICES: [0,1,2,3][0m
+[[36m2022-04-26 13:54:54,166[0m][[34mpytorch_lightning.accelerators.gpu[0m][[32mINFO[0m] - LOCAL_RANK: 1 - CUDA_VISIBLE_DEVICES: [0,1,2,3][0m
+[[36m2022-04-26 13:54:54,182[0m][[34mpytorch_lightning.utilities.rank_zero[0m][[32mINFO[0m] - Loaded model weights from checkpoint at /disk/student/dvoytan/FNO_acoustic_wave_propogation/logs/experiments/runs/default/2022-04-26_11-31-23/checkpoints/epoch_020.ckpt[0m
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃        Test metric        ┃       DataLoader 0        ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│         test/loss         │     4.187572479248047     │
+└───────────────────────────┴───────────────────────────┘
+Testing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40/40 0:00:41 • 0:00:00 0.94it/s 
+[[36m2022-04-26 13:55:37,045[0m][[34msrc.training_pipeline[0m][[32mINFO[0m] - Finalizing![0m
+[[36m2022-04-26 13:55:37,046[0m][[34msrc.training_pipeline[0m][[32mINFO[0m] - Best model ckpt at /disk/student/dvoytan/FNO_acoustic_wave_propogation/logs/experiments/runs/default/2022-04-26_11-31-23/checkpoints/epoch_020.ckpt[0m

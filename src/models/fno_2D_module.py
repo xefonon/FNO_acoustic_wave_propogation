@@ -3,6 +3,7 @@ from typing import Any, List
 import torch
 from pytorch_lightning import LightningModule
 from torchmetrics.classification.accuracy import Accuracy
+import matplotlib.pyplot as plt
 
 
 class FNO2dModule(LightningModule):
@@ -74,6 +75,10 @@ class FNO2dModule(LightningModule):
     def validation_step(self, batch: Any, batch_idx: int):
         loss, y_hat, y = self.step(batch)
 
+        if batch_idx == 0 & self.global_step % 3 == 0:
+            figure = self.plot_predictions(y=y[0,:,:,0], y_hat=y_hat[0,:,:,0])
+            self.logger.experiment.add_figure('Network Prediction', figure, global_step=self.global_step)
+
         # log val metrics
         self.log("val/loss", loss, on_step=False, on_epoch=True, prog_bar=False)
         return {"loss": loss}
@@ -106,3 +111,12 @@ class FNO2dModule(LightningModule):
         optimizer = torch.optim.Adam(params=self.parameters(), lr=self.hparams.lr, weight_decay=self.hparams.weight_decay)
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=self.hparams.step_size, gamma=self.hparams.gamma)
         return dict(optimizer=optimizer, scheduler=scheduler)
+
+    def plot_predictions(self, y, y_hat):
+        fig, axs = plt.subplots(ncols = 3, figsize=(20,10))
+        titles = ['y real', 'y_hat_real', 'Difference']
+        content = [y, y_hat, (y-y_hat)]
+        for i in range(len(titles)):
+            axs[i].imshow(content[i].cpu().numpy(), cmap='seismic')
+            axs[i].set_title(titles[i])
+        return fig
