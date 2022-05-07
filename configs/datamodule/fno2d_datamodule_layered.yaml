@@ -2,8 +2,8 @@ _target_: src.datamodules.fno_2d_datamodule.FNO2dDataModule
 
 dataset:
   _target_: src.datamodules.fno_2d_datamodule.FNO2dDataset
-  data_path: "/disk/student/dvoytan/Desktop/Forward_Solver/work/work_fno_DL-BASED-model-building/solutions/*"
-  n_models: 1400
+  data_path: "/disk/student/dvoytan/FNO_acoustic_wave_propogation/data/layered_models_copy/*"
+  n_models: 4000
   x_shape: [0, 128.01, 0.01]
   y_shape: [0, 128.01, 0.01]
   reshape_shape: [128, 128]

@@ -90,10 +90,12 @@ class FNO2dDataset(Dataset):
         return x
 
     def load_y(self, idx):
-        y_real = np.fromfile(os.path.join(self.data[idx], 'real_srcx_64'), dtype='float32')
+        real_file = glob.glob(os.path.join(self.data[idx], 'real_srcx_*'))
+        y_real = np.fromfile(real_file, dtype='float32')
         y_real = y_real.reshape(self.reshape_shape)
 
-        y_imag = np.fromfile(os.path.join(self.data[idx], 'imag_srcx_64'), dtype='float32')
+        imag_file = glob.glob(os.path.join(self.data[idx], 'imag_srcx_*'))
+        y_imag = np.fromfile(imag_file, dtype='float32')
         y_imag = y_imag.reshape(self.reshape_shape)
 
         y_real = y_real * self.y_rescale
