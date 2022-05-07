@@ -85,7 +85,7 @@ class FNO2dDataset(Dataset):
 
     def load_x(self, idx): 
         path = re.sub('[0-9]+\.[0-9]+_Hz/', '', self.data[idx])
-        path = glob.glob(os.path.join(path, 'layercake_*'))
+        path = glob.glob(os.path.join(path, '*model*'))
         x = np.fromfile(path[0], dtype='float32').reshape(self.reshape_shape)
         return x
 
