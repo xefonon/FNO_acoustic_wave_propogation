@@ -62,7 +62,7 @@ class FNO2dModule(LightningModule):
     def validation_step(self, batch: Any, batch_idx: int):
         loss, y_hat, y = self.step(batch)
 
-        if batch_idx == 0 & self.global_step % 3 == 0:
+        if (batch_idx in {0, 2, 4}) & (self.global_step % 3) == 0:
             figure = self.plot_predictions(y=y[0,:,:,0], y_hat=y_hat[0,:,:,0])
             self.logger.experiment.add_figure('Network Prediction', figure, global_step=self.global_step)
 
