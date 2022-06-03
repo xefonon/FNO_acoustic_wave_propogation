@@ -3,6 +3,7 @@ from typing import Any, List
 import torch
 from pytorch_lightning import LightningModule
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 
 
 class FNO2dModule(LightningModule):
@@ -99,11 +100,15 @@ class FNO2dModule(LightningModule):
         scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=self.hparams.step_size, gamma=self.hparams.gamma)
         return dict(optimizer=optimizer, scheduler=scheduler)
 
-    def plot_predictions(self, y, y_hat):
-        fig, axs = plt.subplots(ncols = 3, figsize=(20,10))
-        titles = ['y real', 'y_hat_real', 'Difference']
-        content = [y, y_hat, (y-y_hat)]
+    def plot_predictions(self, x, y, y_hat):
+        fig, axs = plt.subplots(ncols=4, figsize=(25, 10))
+        titles = ['x, y real', 'y_hat_real', 'Difference']
+        content = [x, y, y_hat, (y-y_hat)]
+        cmaps = ['viridis', 'seismic', 'seismic', 'seismic']
         for i in range(len(titles)):
-            axs[i].imshow(content[i].cpu().numpy(), cmap='seismic')
+            im = axs[i].imshow(content[i].cpu().numpy(), cmap=cmaps[i])
             axs[i].set_title(titles[i])
+            axs_div = make_axes_locatable(axs[i])
+            cax1 = axs_div.append_axes("right", size="7%", pad="2%")
+            cb1 = fig.colorbar(im, cax=cax1)
         return fig
