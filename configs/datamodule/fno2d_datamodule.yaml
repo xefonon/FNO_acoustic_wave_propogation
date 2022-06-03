@@ -8,7 +8,7 @@ dataset:
   y_shape: [0, 201.01, 0.01]
   reshape_shape: [301, 201]
   stage: "train"
-  y_rescale: 10000.0
+  y_rescale: 3.5e-6
   train_freqs: [0.5, 10.1, 0.5]  # Start stop step for arange
   test_freqs: [0.25, 10.25, 0.5]
   

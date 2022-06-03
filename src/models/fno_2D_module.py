@@ -43,10 +43,10 @@ class FNO2dModule(LightningModule):
         x, y = batch
         y_hat = self.forward(x)
         loss = self.criterion(y_hat, y)
-        return loss, y_hat, y
+        return loss, y_hat, y, x
 
     def training_step(self, batch: Any, batch_idx: int):
-        loss, y_hat, y = self.step(batch)
+        loss, y_hat, y, x = self.step(batch)
 
         # log train metrics
         self.log("train/loss", loss, on_step=False, on_epoch=True, prog_bar=False)
@@ -61,10 +61,10 @@ class FNO2dModule(LightningModule):
         pass
 
     def validation_step(self, batch: Any, batch_idx: int):
-        loss, y_hat, y = self.step(batch)
+        loss, y_hat, y, x = self.step(batch)
 
         if (batch_idx in {0, 2, 4}) & (self.global_step % 3) == 0:
-            figure = self.plot_predictions(y=y[0,:,:,0], y_hat=y_hat[0,:,:,0])
+            figure = self.plot_predictions(x = x[0,:,:,0], y=y[0,:,:,0], y_hat=y_hat[0,:,:,0])
             self.logger.experiment.add_figure('Network Prediction', figure, global_step=self.global_step)
 
         # log val metrics
@@ -75,7 +75,7 @@ class FNO2dModule(LightningModule):
         pass
 
     def test_step(self, batch: Any, batch_idx: int):
-        loss, y_hat, y = self.step(batch)
+        loss, y_hat, y, x = self.step(batch)
 
         # log test metrics
         self.log("test/loss", loss, on_step=False, on_epoch=True)
@@ -103,7 +103,7 @@ class FNO2dModule(LightningModule):
     def plot_predictions(self, x, y, y_hat):
         fig, axs = plt.subplots(ncols=4, figsize=(25, 10))
         titles = ['x, y real', 'y_hat_real', 'Difference']
-        content = [x, y, y_hat, (y-y_hat)]
+        content = [x, y, y_hat, (y - y_hat)]
         cmaps = ['viridis', 'seismic', 'seismic', 'seismic']
         for i in range(len(titles)):
             im = axs[i].imshow(content[i].cpu().numpy(), cmap=cmaps[i])

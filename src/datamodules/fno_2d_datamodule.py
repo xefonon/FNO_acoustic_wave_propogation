@@ -24,7 +24,7 @@ class FNO2dDataset(Dataset):
                  y_shape: Tuple = (0, 128, 0.01),
                  reshape_shape: Tuple[int, int] = (128, 128),
                  stage: str = 'train',
-                 y_rescale: float = 10000,
+                 y_rescale: float = 3.5e-6,
                  train_freqs: Tuple = (0.5, 10.1, 0.5),  # Start stop step
                  test_freqs: Tuple = (0.25, 10.25, 0.5),
                  ):
@@ -98,8 +98,8 @@ class FNO2dDataset(Dataset):
         y_imag = np.fromfile(imag_file[0], dtype='float32')
         y_imag = y_imag.reshape(self.reshape_shape)
 
-        y_real = y_real * self.y_rescale
-        y_imag = y_imag * self.y_rescale
+        y_real = y_real / self.y_rescale
+        y_imag = y_imag / self.y_rescale
         return y_real, y_imag
 
     def __getitem__(self, idx):
