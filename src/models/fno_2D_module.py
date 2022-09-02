@@ -102,7 +102,7 @@ class FNO2dModule(LightningModule):
 
     def plot_predictions(self, x, y, y_hat):
         fig, axs = plt.subplots(ncols=4, figsize=(25, 10))
-        titles = ['x, y real', 'y_hat_real', 'Difference']
+        titles = ['x', 'y real', 'y_hat_real', 'Difference']
         content = [x, y, y_hat, (y - y_hat)]
         cmaps = ['viridis', 'seismic', 'seismic', 'seismic']
         for i in range(len(titles)):
