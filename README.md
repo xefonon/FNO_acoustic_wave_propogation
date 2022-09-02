@@ -11,4 +11,4 @@
 <br><br>
  
 
- # Coming Soon!
+This code is used to train a Fourier Neural Operator to learn the constant density frequency domain acoustic (Helmholtz) wave equation.
